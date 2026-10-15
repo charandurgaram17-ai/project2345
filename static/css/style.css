@@ -1,0 +1,445 @@
+/* ==========================================================================
+   FarmDirect AI — Fresh from the Farm. Fair for Everyone.
+   Design System: Deep Forest Green, Fresh Leaf Green, Warm Cream, Harvest Yellow
+   ========================================================================== */
+
+:root {
+  --primary-deep: #1b4332;
+  --primary-dark: #2d6a4f;
+  --primary-green: #40916c;
+  --primary-leaf: #52b788;
+  --primary-light: #d8f3dc;
+  
+  --accent-gold: #e9c46a;
+  --accent-amber: #f4a261;
+  --accent-terra: #e76f51;
+
+  --bg-cream: #faf9f5;
+  --bg-card: #ffffff;
+  --bg-soft: #f4f6f0;
+
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+
+  --border-light: #e5e7eb;
+  --border-green: #b7e4c7;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 14px rgba(27, 67, 50, 0.08);
+  --shadow-lg: 0 10px 25px rgba(27, 67, 50, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-cream);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Typography & Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--primary-deep);
+  letter-spacing: -0.02em;
+}
+
+/* Navigation Bar */
+.navbar-farm {
+  background-color: var(--primary-deep);
+  border-bottom: 2px solid var(--accent-gold);
+  box-shadow: var(--shadow-md);
+  padding: 0.8rem 1rem;
+}
+
+.navbar-farm .navbar-brand {
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-farm .navbar-brand span.brand-accent {
+  color: var(--accent-gold);
+}
+
+.navbar-farm .nav-link {
+  color: #e2e8f0;
+  font-weight: 500;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.navbar-farm .nav-link:hover,
+.navbar-farm .nav-link.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Buttons */
+.btn-farm-primary {
+  background-color: var(--primary-dark);
+  color: #ffffff;
+  font-weight: 600;
+  border: 1px solid var(--primary-deep);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-farm-primary:hover {
+  background-color: var(--primary-deep);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(27, 67, 50, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-farm-accent {
+  background-color: var(--accent-gold);
+  color: var(--primary-deep);
+  font-weight: 700;
+  border: 1px solid #d4a373;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-farm-accent:hover {
+  background-color: #dfb250;
+  color: var(--primary-deep);
+  box-shadow: 0 4px 12px rgba(233, 196, 106, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-farm-outline {
+  border: 2px solid var(--primary-dark);
+  color: var(--primary-dark);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.3rem;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-farm-outline:hover {
+  background-color: var(--primary-dark);
+  color: #ffffff;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, rgba(27, 67, 50, 0.95) 0%, rgba(45, 106, 79, 0.92) 100%),
+              radial-gradient(circle at 80% 20%, rgba(233, 196, 106, 0.18) 0%, transparent 60%);
+  color: #ffffff;
+  padding: 4.5rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.18;
+  color: #ffffff;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #d1e7dd;
+  max-width: 650px;
+  margin-top: 1rem;
+}
+
+/* Search Bar Card */
+.search-card-hero {
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Cards & Grid */
+.farm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.farm-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-green);
+}
+
+.farm-card .card-body {
+  flex: 1 1 auto;
+  padding: 1.25rem;
+}
+
+.farm-card .card-footer {
+  background: transparent;
+  border-top: 1px solid var(--border-light);
+  padding: 0.9rem 1.25rem;
+}
+
+/* Product Badges */
+.badge-category {
+  background-color: var(--primary-light);
+  color: var(--primary-deep);
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.badge-surplus {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.badge-fresh {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.badge-match {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+/* Price Display */
+.price-tag {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+}
+
+.price-tag-original {
+  text-decoration: line-through;
+  color: var(--text-light);
+  font-size: 1rem;
+  margin-right: 0.4rem;
+}
+
+/* Category Quick Filter */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover,
+.category-pill.active {
+  background: var(--primary-dark);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+}
+
+/* Stat Cards */
+.stat-box {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--primary-green);
+}
+
+.stat-box.stat-gold::before {
+  background: var(--accent-gold);
+}
+
+.stat-box.stat-terra::before {
+  background: var(--accent-terra);
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.stat-label {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Status Tracking Timeline */
+.status-pill {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.status-Pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-Accepted {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-Ready-for-Dispatch {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.status-Completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-Cancelled, .status-Rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* AI Insight Box */
+.ai-insight-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid var(--border-green);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  position: relative;
+}
+
+.ai-sparkle-icon {
+  color: #10b981;
+}
+
+/* Footer */
+.footer-farm {
+  background-color: var(--primary-deep);
+  color: #cbd5e1;
+  padding: 3rem 1rem 1.5rem;
+  margin-top: 4rem;
+  border-top: 3px solid var(--accent-gold);
+}
+
+.footer-farm h5 {
+  color: #ffffff;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.footer-farm a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-farm a:hover {
+  color: var(--accent-gold);
+}
+
+/* Alert Banner for Hackathon Demo */
+.demo-banner {
+  background: #fffbeb;
+  border-bottom: 1px solid #fef3c7;
+  color: #92400e;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Image Placeholders */
+.product-image-container {
+  height: 200px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-image-placeholder {
+  font-size: 3.5rem;
+  color: var(--primary-leaf);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-section {
+    padding: 2.5rem 1rem;
+  }
+}

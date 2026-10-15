@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Order History &amp; Tracking — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div>
+      <h1 class="h2 fw-bold text-dark mb-1">
+        {% if view_as == 'farmer' %}Incoming Farm Orders{% else %}Your Direct Purchase Orders{% endif %}
+      </h1>
+      <p class="text-muted mb-0">
+        Track direct order fulfillment, delivery notes, and transaction statuses in real-time.
+      </p>
+    </div>
+
+    <div>
+      {% if view_as == 'farmer' %}
+        <a href="{{ url_for('farmer_dashboard') }}" class="btn btn-outline-success">
+          <i class="bi bi-speedometer2 me-1"></i>Farmer Dashboard
+        </a>
+      {% else %}
+        <a href="{{ url_for('buyer_dashboard') }}" class="btn btn-outline-success">
+          <i class="bi bi-grid me-1"></i>Buyer Dashboard
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Status Filter Pills -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{{ request.path }}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill">
+      All ({{ orders|length }})
+    </a>
+    {% for st in ["Pending", "Accepted", "Ready for Dispatch", "Completed", "Cancelled"] %}
+      <a href="{{ request.path }}?status={{ st }}" class="btn btn-sm {% if status_filter == st %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill">
+        {{ st }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Orders Table -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0">
+      {% if orders %}
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Order #</th>
+                <th>Date &amp; Time</th>
+                <th>Produce Items</th>
+                <th>Counterparty</th>
+                <th>Total Value</th>
+                <th>Status</th>
+                <th>Delivery / Notes</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td class="fw-bold">#{{ order.id }}</td>
+                <td class="small text-muted">
+                  {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                </td>
+                <td>
+                  {% for item in order.items %}
+                    <div class="fw-bold text-dark">{{ item.product.name }}</div>
+                    <div class="small text-muted">{{ item.quantity }} {{ item.product.unit }} &times; ₹{{ item.unit_price }}</div>
+                  {% endfor %}
+                </td>
+                <td>
+                  {% if view_as == 'farmer' %}
+                    <strong>{{ order.buyer.name }}</strong>
+                    <div class="small text-muted">{{ order.buyer.business_type.title() if order.buyer.business_type else 'Buyer' }}</div>
+                    <div class="small text-muted"><i class="bi bi-telephone"></i> {{ order.buyer.phone }}</div>
+                  {% else %}
+                    {% for item in order.items %}
+                      <strong>{{ item.farmer.name }}</strong>
+                      <div class="small text-muted"><i class="bi bi-geo-alt"></i> {{ item.farmer.district or item.farmer.village }}</div>
+                      <div class="small text-muted"><i class="bi bi-telephone"></i> {{ item.farmer.phone }}</div>
+                    {% endfor %}
+                  {% endif %}
+                </td>
+                <td>
+                  <span class="fw-bold text-success fs-6">₹{{ "{:,.2f}".format(order.total_amount) }}</span>
+                  <div class="small text-muted">COD / Direct</div>
+                </td>
+                <td>
+                  <span class="status-pill status-{{ order.status.replace(' ', '-') }}">
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td class="small text-muted" style="max-width: 200px;">
+                  {{ order.delivery_address_or_pickup_details }}
+                  {% if order.notes %}
+                    <div class="text-dark"><strong>Note:</strong> {{ order.notes }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if view_as == 'farmer' %}
+                    {% if order.status == 'Pending' %}
+                      <div class="d-flex gap-1">
+                        <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          <input type="hidden" name="status" value="Accepted">
+                          <button type="submit" class="btn btn-sm btn-success" title="Accept">Accept</button>
+                        </form>
+                        <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          <input type="hidden" name="status" value="Rejected">
+                          <button type="submit" class="btn btn-sm btn-outline-danger" title="Reject">Reject</button>
+                        </form>
+                      </div>
+                    {% elif order.status == 'Accepted' %}
+                      <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="Ready for Dispatch">
+                        <button type="submit" class="btn btn-sm btn-primary">Dispatch</button>
+                      </form>
+                    {% elif order.status == 'Ready for Dispatch' %}
+                      <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="status" value="Completed">
+                        <button type="submit" class="btn btn-sm btn-success">Complete</button>
+                      </form>
+                    {% else %}
+                      <span class="text-muted small">No action needed</span>
+                    {% endif %}
+                  {% else %}
+                    <!-- Buyer View Action -->
+                    {% if order.can_transition_to('Cancelled') %}
+                      <form action="{{ url_for('cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Cancel Order #{{ order.id }}?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                      </form>
+                    {% else %}
+                      <span class="text-muted small">Locked</span>
+                    {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-box-seam display-4 mb-2 d-block"></i>
+          No orders found matching this filter.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

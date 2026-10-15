@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Pytest & test cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# SQLite databases & instance folder
+instance/*.db
+*.sqlite3
+
+# Uploaded media (keep folder via .gitkeep)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# IDE & OS files
+.vscode/
+.idea/
+*.swp
+Thumbs.db

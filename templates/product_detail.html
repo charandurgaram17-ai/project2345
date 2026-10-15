@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-success">Home</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('marketplace') }}" class="text-success">Marketplace</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('marketplace', category=product.category) }}" class="text-success">{{ product.category }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- Left Column: Image, Freshness Timeline & Farmer Details -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="position-relative" style="height: 340px; background-color: #f8fafc; display: flex; align-items: center; justify-content: center;">
+          {% if product.image_path %}
+            <img src="{{ url_for('static', filename=product.image_path) }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+          {% else %}
+            <img src="{{ url_for('static', filename='images/' + (product.category.lower().split(' ')[0] if product.category.lower().split(' ')[0] in ['vegetables','fruits','grains','pulses','spices','dairy'] else 'vegetables') + '.svg') }}" alt="{{ product.name }}" style="max-height: 200px; width: auto;">
+          {% endif %}
+
+          <div class="position-absolute top-0 start-0 m-3">
+            <span class="badge-category fs-6 shadow-sm">{{ product.category }}</span>
+          </div>
+
+          {% if product.is_surplus %}
+            <div class="position-absolute top-0 end-0 m-3">
+              <span class="badge-surplus fs-6 shadow-sm">
+                <i class="bi bi-tag-fill me-1"></i>Surplus Rescue Deal: {{ product.discount_percentage|int }}% OFF
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h2 class="h3 fw-bold text-dark mb-1">{{ product.name }}</h2>
+              <div class="text-muted small">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ product.location }} 
+                {% if product.village %}(Village: {{ product.village }}){% endif %}
+              </div>
+            </div>
+            
+            <div class="text-end">
+              {% if product.is_surplus and product.discount_percentage > 0 %}
+                <span class="price-tag-original d-block">₹{{ product.price }}</span>
+                <span class="price-tag text-danger">₹{{ product.effective_price }}</span>
+              {% else %}
+                <span class="price-tag">₹{{ product.price }}</span>
+              {% endif %}
+              <span class="text-muted small">/ {{ product.unit }}</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <h6 class="fw-bold text-dark mb-2">Produce Description</h6>
+          <p class="text-muted mb-4">
+            {{ product.description or "Freshly harvested agricultural produce cultivated under natural farming practices. Ready for immediate direct farm dispatch with zero middleman holding times." }}
+          </p>
+
+          <!-- Harvest & Freshness Grid -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+              <div class="p-3 bg-light rounded-3 border text-center">
+                <div class="text-muted small mb-1"><i class="bi bi-calendar-event me-1"></i>Harvest Date</div>
+                <div class="fw-bold text-dark">
+                  {% if product.harvest_date %}
+                    {{ product.harvest_date.strftime('%d %b %Y') }}
+                    <div class="text-success small">({{ product.days_since_harvest }} days ago)</div>
+                  {% else %}
+                    Fresh Harvest
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="p-3 bg-light rounded-3 border text-center">
+                <div class="text-muted small mb-1"><i class="bi bi-hourglass-split me-1"></i>Freshness Window</div>
+                <div class="fw-bold text-dark">
+                  {% if product.freshness_date %}
+                    {{ product.freshness_date.strftime('%d %b %Y') }}
+                    {% if product.days_until_freshness_expiry is not none %}
+                      <div class="text-primary small">({{ product.days_until_freshness_expiry }} days left)</div>
+                    {% endif %}
+                  {% else %}
+                    Extended Shelf Life
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="p-3 bg-light rounded-3 border text-center">
+                <div class="text-muted small mb-1"><i class="bi bi-box-seam me-1"></i>Available Stock</div>
+                <div class="fw-bold text-success fs-5">
+                  {{ product.quantity }} {{ product.unit }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verified Farmer Profile Card -->
+          <div class="p-3 rounded-4 border bg-white shadow-sm mb-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold fs-5" style="width: 48px; height: 48px;">
+                  {{ product.farmer.name[0] }}
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0 text-dark">{{ product.farmer.name }}</h6>
+                  <span class="badge bg-success-subtle text-success small">Verified Direct Producer</span>
+                </div>
+              </div>
+              <div>
+                <a href="tel:{{ product.farmer.phone }}" class="btn btn-outline-success btn-sm">
+                  <i class="bi bi-telephone-fill me-1"></i>Call Farmer
+                </a>
+              </div>
+            </div>
+            {% if product.farmer.farm_details %}
+              <p class="small text-muted mb-0 mt-2">
+                <i class="bi bi-info-circle me-1 text-success"></i>{{ product.farmer.farm_details }}
+              </p>
+            {% endif %}
+          </div>
+
+          <!-- Report Listing Action -->
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-link text-muted text-decoration-none small" data-bs-toggle="modal" data-bs-target="#reportModal">
+              <i class="bi bi-flag me-1"></i>Report Inappropriate Listing
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- AI Fair Price Assistant Breakdown Box -->
+      {% if pricing_analysis %}
+      <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); border-left: 4px solid #16a34a !important;">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-robot text-success fs-4"></i>
+              <div>
+                <h5 class="fw-bold text-success mb-0">AI Fair Price Assistant Benchmark</h5>
+                <span class="small text-muted">Transparent advisory baseline calculated for this produce lot</span>
+              </div>
+            </div>
+            <span class="badge bg-success">{{ pricing_analysis.confidence_percentage }}% Confidence</span>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="p-3 bg-white rounded-3 border">
+                <div class="small text-muted">AI Recommended Fair Range</div>
+                <div class="h4 fw-bold text-dark mb-0">
+                  ₹{{ pricing_analysis.price_range.min }} - ₹{{ pricing_analysis.price_range.max }}
+                  <span class="small text-muted fw-normal">/ {{ pricing_analysis.unit }}</span>
+                </div>
+                <div class="small text-success fw-semibold mt-1">
+                  Optimal Target: ₹{{ pricing_analysis.recommended_price }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="p-3 bg-white rounded-3 border">
+                <div class="small text-muted">Listing Price Assessment</div>
+                {% if pricing_analysis.comparison %}
+                  <div class="h5 fw-bold text-{{ pricing_analysis.comparison.badge }} mb-0">
+                    {{ pricing_analysis.comparison.status }}
+                  </div>
+                  <div class="small text-muted mt-1">
+                    {{ pricing_analysis.comparison.message }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Factor Breakdown Table -->
+          <h6 class="small fw-bold text-dark mb-2">Price Breakdown Factors:</h6>
+          <div class="table-responsive small mb-2">
+            <table class="table table-sm table-bordered bg-white mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Factor</th>
+                  <th>Impact</th>
+                  <th>Explainability Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for f in pricing_analysis.factors %}
+                <tr>
+                  <td class="fw-semibold">{{ f.name }}</td>
+                  <td class="text-success fw-bold">{{ f.impact }}</td>
+                  <td class="text-muted">{{ f.explanation }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-2 bg-light rounded small text-muted text-center" style="font-size: 0.75rem;">
+            <i class="bi bi-info-circle me-1"></i>{{ pricing_analysis.disclaimer }}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Right Column: Direct Order Placement Form -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 85px;" id="orderFormCard">
+        <div class="card-header bg-farm-primary text-white py-3 px-4" style="background-color: var(--primary-deep);">
+          <h5 class="fw-bold mb-0 text-white">
+            <i class="bi bi-cart-check me-2"></i>Direct Order Placement
+          </h5>
+          <span class="small text-light">Direct transaction between you and Farmer {{ product.farmer.name }}</span>
+        </div>
+
+        <div class="card-body p-4">
+          <!-- Price summary row -->
+          <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+            <div>
+              <span class="small text-muted d-block">Unit Rate</span>
+              <span class="h4 fw-bold text-dark mb-0" id="orderUnitPrice" data-price="{{ product.effective_price }}">
+                ₹{{ product.effective_price }}
+              </span>
+              <span class="text-muted small">/ {{ product.unit }}</span>
+            </div>
+            <div class="text-end">
+              <span class="small text-muted d-block">Stock Available</span>
+              <span class="fw-bold text-success">{{ product.quantity }} {{ product.unit }}</span>
+            </div>
+          </div>
+
+          {% if current_user and current_user.is_farmer() and current_user.id == product.farmer_id %}
+            <!-- Farmer viewing own listing -->
+            <div class="alert alert-info small mb-3">
+              <i class="bi bi-info-circle me-1"></i>This is your active listing. You can update price, stock, or surplus discounts from your dashboard.
+            </div>
+            <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-warning w-100 fw-bold mb-2">
+              <i class="bi bi-pencil me-1"></i>Edit This Listing
+            </a>
+            <a href="{{ url_for('farmer_dashboard') }}" class="btn btn-outline-dark w-100">
+              Return to Farmer Dashboard
+            </a>
+
+          {% elif current_user %}
+            <!-- Authenticated Buyer Order Form -->
+            <form action="{{ url_for('create_order') }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+
+              <div class="mb-3">
+                <label for="orderQuantityInput" class="form-label fw-semibold">
+                  Select Quantity to Purchase (in {{ product.unit }}) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <input type="number" step="any" min="1" max="{{ product.quantity }}" value="10" name="quantity" id="orderQuantityInput" class="form-control form-control-lg fw-bold" required>
+                  <span class="input-group-text bg-light fw-bold text-muted">{{ product.unit }}</span>
+                </div>
+                <div class="form-text small text-muted">
+                  Max available: {{ product.quantity }} {{ product.unit }}.
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Delivery Address or Pickup Details <span class="text-danger">*</span></label>
+                <textarea name="delivery_details" class="form-control" rows="2" required placeholder="e.g. Restaurant Kitchen Gate 2, Pune Road, or Farm Gate Self-Pickup">{{ current_user.village }}, {{ current_user.district }}</textarea>
+                <div class="form-text small text-muted">Specify delivery location or your transport vehicle pickup schedule.</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Special Instructions (Optional)</label>
+                <input type="text" name="notes" class="form-control" placeholder="e.g. Please sort into 25kg crates; call upon arrival">
+              </div>
+
+              <!-- Order Calculations Box -->
+              <div class="p-3 bg-light rounded-3 border mb-4">
+                <div class="d-flex justify-content-between mb-2 small">
+                  <span class="text-muted">Subtotal:</span>
+                  <span class="fw-bold text-dark" id="orderSubtotalDisplay">₹0.00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 small">
+                  <span class="text-muted">Intermediary Commission:</span>
+                  <span class="fw-bold text-success">₹0.00 (Zero Fee)</span>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-dark">Estimated Order Total:</span>
+                  <span class="h4 fw-bold text-success mb-0" id="orderTotalDisplay">₹0.00</span>
+                </div>
+                <div class="mt-2 text-muted small" style="font-size: 0.75rem;">
+                  <i class="bi bi-cash-stack me-1"></i>Settlement Method: <strong>Cash on Delivery / Direct Settlement</strong> upon produce inspection.
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-farm-primary w-100 py-3 fw-bold fs-6 shadow-sm">
+                <i class="bi bi-bag-check-fill me-2"></i>Confirm Direct Order
+              </button>
+            </form>
+
+          {% else %}
+            <!-- Unauthenticated State -->
+            <div class="text-center py-4">
+              <i class="bi bi-lock-fill text-muted display-5 mb-3"></i>
+              <h5 class="fw-bold">Sign In to Place an Order</h5>
+              <p class="small text-muted mb-4">
+                Connect directly with the farmer. Create a free buyer account or sign in to reserve this produce lot.
+              </p>
+              <div class="d-grid gap-2">
+                <a href="{{ url_for('login', next=request.url) }}" class="btn btn-farm-primary fw-bold">
+                  <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to Order
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-success">
+                  Register as Buyer
+                </a>
+              </div>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Safety Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-4 border-0">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title fw-bold" id="reportModalLabel"><i class="bi bi-flag-fill me-2"></i>Report Produce Listing</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ url_for('report_product', product_id=product.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">
+            Help maintain marketplace integrity. The platform administrator will verify this listing promptly.
+          </p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Reason for Report <span class="text-danger">*</span></label>
+            <textarea name="reason" class="form-control" rows="3" required placeholder="Describe any inaccuracies in price, stock availability, freshness claims, or inappropriate content..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger btn-sm fw-bold">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

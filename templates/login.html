@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      
+      <!-- Hackathon 1-Click Quick Demo Login Card -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4" style="background: #ecfdf5; border: 1px dashed #34d399 !important;">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-lightning-charge-fill text-success fs-5"></i>
+            <h6 class="fw-bold text-success mb-0">Hackathon 1-Click Demo Logins</h6>
+          </div>
+          <p class="small text-muted mb-3">
+            Click any demo profile to test role-based dashboards instantly:
+          </p>
+          <div class="row g-2">
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-outline-success w-100 text-start btn-demo-login" data-email="farmer.ramesh@farmdirect.demo">
+                <i class="bi bi-flower1 me-1"></i><strong>Farmer Ramesh</strong><br>
+                <span class="text-muted" style="font-size: 0.72rem;">Nashik Vegetable Farm</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-outline-primary w-100 text-start btn-demo-login" data-email="spicekitchen@demo.com">
+                <i class="bi bi-shop me-1"></i><strong>Restaurant Buyer</strong><br>
+                <span class="text-muted" style="font-size: 0.72rem;">Spice Kitchen, Pune</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-outline-info w-100 text-start btn-demo-login" data-email="agromega@demo.com">
+                <i class="bi bi-truck me-1"></i><strong>Wholesale Buyer</strong><br>
+                <span class="text-muted" style="font-size: 0.72rem;">AgroMega APMC Hub</span>
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-sm btn-outline-dark w-100 text-start btn-demo-login" data-email="admin@farmdirect.ai">
+                <i class="bi bi-shield-lock me-1"></i><strong>Platform Admin</strong><br>
+                <span class="text-muted" style="font-size: 0.72rem;">Full Moderation Access</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Login Form -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold">Sign In to FarmDirect AI</h3>
+            <p class="text-muted small">Access your farmer dashboard or buyer orders.</p>
+          </div>
+
+          <form action="{{ url_for('login', next=request.args.get('next')) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="loginEmail" name="email" required placeholder="name@example.com">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="loginPassword" class="form-label fw-semibold mb-0">Password</label>
+                <span class="text-muted small">(Demo: Password@123)</span>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
+                <input type="password" class="form-control" id="loginPassword" name="password" required placeholder="••••••••">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-farm-primary w-100 py-2 fw-bold shadow-sm">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+            </button>
+          </form>
+
+          <div class="text-center mt-4 pt-3 border-top">
+            <p class="text-muted small mb-0">
+              Don't have an account yet? 
+              <a href="{{ url_for('register') }}" class="text-success fw-bold text-decoration-none">Register here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

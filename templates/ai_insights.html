@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}AI Pricing &amp; Matching Insights — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="row align-items-center mb-4 pb-3 border-bottom">
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold">
+          <i class="bi bi-cpu-fill me-1"></i>AI &amp; Heuristic Analytics Hub
+        </span>
+        <span class="badge bg-light text-dark border">Transparent Models</span>
+      </div>
+      <h1 class="h2 fw-bold text-dark mb-1">Fair Price Assistant &amp; Smart Match Engine</h1>
+      <p class="text-muted mb-0">
+        Empowering farmers and buyers with explainable price baselines and multi-criteria compatibility ranking. Zero black-box guesswork.
+      </p>
+    </div>
+
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+      <a href="{{ url_for('marketplace') }}" class="btn btn-farm-primary">
+        <i class="bi bi-shop me-1"></i>Explore Live Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- Transparent Methodology Notice -->
+  <div class="alert alert-warning border-warning-subtle shadow-sm mb-4">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-shield-exclamation fs-4 text-warning"></i>
+      <div>
+        <strong>Transparent Model Disclosure:</strong>
+        All benchmark recommendations in this MVP are computed using transparent heuristics and our reference dataset ({{ ref_count }} mandi benchmark records across Indian agricultural clusters). Recommendations are strictly advisory: <em>farmers always determine their final listing prices.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive AI Fair Price Simulator Card -->
+  <div class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-robot text-success fs-5"></i>
+        <h5 class="fw-bold mb-0 text-dark">Interactive Fair Price Simulator</h5>
+      </div>
+      <span class="badge bg-success">Feature 1: Pricing Assistant</span>
+    </div>
+
+    <div class="card-body p-4">
+      <p class="small text-muted mb-4">
+        Simulate an AI pricing benchmark for any crop, quantity tier, and location. See the transparent factor weights applied in real-time:
+      </p>
+
+      <form id="simulatorForm" class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Commodity / Crop</label>
+          <input type="text" id="simCrop" class="form-control" value="Tomatoes" placeholder="e.g. Tomatoes, Basmati Rice">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">Category</label>
+          <select id="simCategory" class="form-select">
+            {% for cat in categories %}
+              <option value="{{ cat }}">{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">Lot Quantity</label>
+          <input type="number" id="simQty" class="form-control" value="150" step="any">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">Unit</label>
+          <select id="simUnit" class="form-select">
+            <option value="kg">kg</option>
+            <option value="quintal">quintal (100 kg)</option>
+            <option value="tonne">tonne (1000 kg)</option>
+            <option value="dozen">dozen</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">District</label>
+          <input type="text" id="simDistrict" class="form-control" value="Nashik" placeholder="e.g. Nashik, Pune">
+        </div>
+
+        <div class="col-12 text-end">
+          <button type="button" class="btn btn-farm-primary px-4 fw-bold" id="btnRunSimulator">
+            <i class="bi bi-lightning-charge-fill me-1"></i>Calculate Fair Price Breakdown
+            <span class="spinner-border spinner-border-sm ms-2 d-none" id="simSpinner"></span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Simulator Output Display -->
+      <div id="simOutputBox">
+        <div class="card bg-light border p-4 rounded-3">
+          <div class="row align-items-center g-4">
+            <div class="col-md-4 text-center border-end">
+              <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 mb-2">Simulated Target</span>
+              <div class="h2 fw-bold text-success mb-0" id="simTargetPrice">₹28.84</div>
+              <span class="text-muted small" id="simUnitDisplay">per kg</span>
+              <div class="mt-2 small text-muted">
+                Fair Range: <strong id="simRangeDisplay">₹25.38 - ₹33.17</strong>
+              </div>
+              <div class="badge bg-success mt-2" id="simConfidence">90% Confidence</div>
+            </div>
+
+            <div class="col-md-8">
+              <h6 class="fw-bold text-dark mb-2">Factor Weights &amp; Explainability:</h6>
+              <div class="row g-2 small" id="simFactorsGrid">
+                <div class="col-6">
+                  <div class="p-2 bg-white rounded border">
+                    <strong>Base Reference:</strong> ₹26.00/kg<br>
+                    <span class="text-muted" style="font-size:0.75rem;">Agmarknet Mandi Demo Baseline (Nashik)</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 bg-white rounded border">
+                    <strong>Freshness Factor:</strong> +8%<br>
+                    <span class="text-muted" style="font-size:0.75rem;">Ultra-fresh harvest within 24h quality premium.</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 bg-white rounded border">
+                    <strong>Volume Scale:</strong> -5%<br>
+                    <span class="text-muted" style="font-size:0.75rem;">Medium bulk commercial batch efficiency.</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-2 bg-white rounded border">
+                    <strong>Regional Hub:</strong> -3%<br>
+                    <span class="text-muted" style="font-size:0.75rem;">Primary production hub rate in Nashik.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart Matching Simulator -->
+  <div class="card border-0 shadow-sm rounded-4 mb-5">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-bullseye text-primary fs-5"></i>
+        <h5 class="fw-bold mb-0 text-dark">Feature 2: Smart Farmer-Buyer Matching Engine</h5>
+      </div>
+      <span class="badge bg-primary">Compatibility Ranking</span>
+    </div>
+
+    <div class="card-body p-4">
+      <p class="small text-muted mb-4">
+        Our multi-dimensional matching engine evaluates listings on product relevance, batch sufficiency, geographic district proximity, buyer business persona (Restaurant vs Wholesaler vs Retailer), and pricing.
+      </p>
+
+      <form id="matchSimulatorForm" class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Produce Needed</label>
+          <input type="text" id="matchQuery" class="form-control" value="Tomatoes" placeholder="e.g. Tomatoes, Onions">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Required Quantity</label>
+          <div class="input-group">
+            <input type="number" id="matchQty" class="form-control" value="50">
+            <span class="input-group-text bg-light">kg</span>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label small fw-semibold">Max Target Budget</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light">₹</span>
+            <input type="number" id="matchBudget" class="form-control" value="35" placeholder="per kg">
+          </div>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100 fw-bold" id="btnRunMatcher">
+            <i class="bi bi-search me-1"></i>Rank Matching Lots
+          </button>
+        </div>
+      </form>
+
+      <div id="matchResultsContainer">
+        <h6 class="fw-bold text-dark mb-3">Live Matching Results:</h6>
+        <div id="matchResultsList" class="row g-3">
+          <div class="col-12 text-center text-muted py-3">
+            Click <strong>Rank Matching Lots</strong> to execute the matching engine.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature 3: Surplus Rescue Explainer -->
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-lightning-fill text-danger fs-5"></i>
+        <h5 class="fw-bold mb-0 text-dark">Feature 3: AI Surplus Rescue Architecture</h5>
+      </div>
+      <span class="badge bg-danger">Food Waste Prevention</span>
+    </div>
+
+    <div class="card-body p-4">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-7">
+          <h6 class="fw-bold text-dark">The Challenge: Post-Harvest Spoilage</h6>
+          <p class="small text-muted mb-3">
+            In traditional supply chains, over 25% of fresh produce spoils in transit or waiting at mandis. Farmers bear 100% of this loss.
+          </p>
+
+          <h6 class="fw-bold text-dark">Our Solution: Proactive Surplus Discovery</h6>
+          <p class="small text-muted mb-3">
+            The Surplus Rescue module monitors inventory age and remaining shelf life. When inventory risk is flagged, it suggests an advisory clearance discount (15% to 30%). Farmers can apply this with 1 click to feature immediately on the marketplace's "Surplus Deals" channel.
+          </p>
+
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('marketplace', surplus='1') }}" class="btn btn-outline-danger btn-sm">
+              <i class="bi bi-tag-fill me-1"></i>View Live Surplus Deals
+            </a>
+          </div>
+        </div>
+
+        <div class="col-md-5">
+          <div class="p-3 bg-light rounded-4 border text-center">
+            <div class="text-danger display-6 mb-2"><i class="bi bi-recycle"></i></div>
+            <h6 class="fw-bold text-dark mb-1">Triple Win Impact</h6>
+            <ul class="list-unstyled small text-muted text-start mt-3 mb-0">
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-1"></i><strong>Farmer:</strong> Recovers capital on perishable inventory before it spoils.</li>
+              <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-1"></i><strong>Buyer:</strong> Procures commercial produce at 15-30% discount.</li>
+              <li><i class="bi bi-check-circle-fill text-success me-1"></i><strong>Environment:</strong> Diverts edible farm food from landfills.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // CSRF token helper
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+  // Simulator Handler
+  const simBtn = document.getElementById("btnRunSimulator");
+  if (simBtn) {
+    simBtn.addEventListener("click", function () {
+      const crop = document.getElementById("simCrop").value;
+      const cat = document.getElementById("simCategory").value;
+      const qty = parseFloat(document.getElementById("simQty").value || "100");
+      const unit = document.getElementById("simUnit").value;
+      const dist = document.getElementById("simDistrict").value;
+      const spinner = document.getElementById("simSpinner");
+
+      if (spinner) spinner.classList.remove("d-none");
+      simBtn.disabled = true;
+
+      fetch("/api/ai/estimate-price", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          product_name: crop,
+          category: cat,
+          quantity: qty,
+          unit: unit,
+          district: dist
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (spinner) spinner.classList.add("d-none");
+        simBtn.disabled = false;
+
+        document.getElementById("simTargetPrice").textContent = "₹" + data.recommended_price;
+        document.getElementById("simUnitDisplay").textContent = "per " + data.unit;
+        document.getElementById("simRangeDisplay").textContent = `₹${data.price_range.min} - ₹${data.price_range.max}`;
+        document.getElementById("simConfidence").textContent = `${data.confidence_percentage}% Confidence`;
+
+        const factorsContainer = document.getElementById("simFactorsGrid");
+        factorsContainer.innerHTML = data.factors.map(f => `
+          <div class="col-6">
+            <div class="p-2 bg-white rounded border">
+              <strong>${f.name}:</strong> <span class="text-success fw-bold">${f.impact}</span><br>
+              <span class="text-muted" style="font-size:0.75rem;">${f.explanation}</span>
+            </div>
+          </div>
+        `).join("");
+      })
+      .catch(err => {
+        if (spinner) spinner.classList.add("d-none");
+        simBtn.disabled = false;
+        alert("Error running simulator");
+      });
+    });
+  }
+
+  // Matching Handler
+  const matchBtn = document.getElementById("btnRunMatcher");
+  if (matchBtn) {
+    matchBtn.addEventListener("click", function () {
+      const q = document.getElementById("matchQuery").value;
+      const qty = parseFloat(document.getElementById("matchQty").value || "0");
+      const b = parseFloat(document.getElementById("matchBudget").value || "0");
+      const resultsList = document.getElementById("matchResultsList");
+
+      resultsList.innerHTML = `<div class="col-12 text-center py-3"><span class="spinner-border spinner-border-sm text-primary"></span> Matching active lots...</div>`;
+
+      fetch("/api/ai/match-listings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          search_query: q,
+          quantity: qty,
+          max_budget: b
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.results || data.results.length === 0) {
+          resultsList.innerHTML = `<div class="col-12 text-center text-muted py-3">No matching produce lots found for your query.</div>`;
+          return;
+        }
+
+        resultsList.innerHTML = data.results.map(r => `
+          <div class="col-md-6">
+            <div class="p-3 bg-white rounded-3 border shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge bg-success">${r.match_score}% Match</span>
+                <span class="text-muted small"><i class="bi bi-geo-alt"></i> ${r.location}</span>
+              </div>
+              <h6 class="fw-bold text-dark mb-1">${r.name}</h6>
+              <div class="small text-muted mb-2">Farmer: <strong>${r.farmer_name}</strong></div>
+              <div class="p-2 bg-light rounded small text-muted mb-3" style="font-size:0.78rem;">
+                <i class="bi bi-check2 text-success me-1"></i>${r.explanation}
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-success fs-5">₹${r.price} / ${r.unit}</span>
+                <a href="/product/${r.id}" class="btn btn-sm btn-outline-success">View Lot</a>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      })
+      .catch(err => {
+        resultsList.innerHTML = `<div class="col-12 text-center text-danger py-3">Error fetching match rankings.</div>`;
+      });
+    });
+  }
+});
+</script>
+{% endblock %}

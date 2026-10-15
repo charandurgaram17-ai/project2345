@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center max-w-700 mx-auto mb-5">
+    <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold mb-2">Zero Intermediary Infrastructure</span>
+    <h1 class="h2 fw-bold text-dark">How FarmDirect AI Works</h1>
+    <p class="text-muted">
+      A transparent, technology-enabled direct marketplace bridging agricultural producers and bulk/commercial purchasers.
+    </p>
+  </div>
+
+  <!-- Step-by-Step Roles Comparison -->
+  <div class="row g-4 mb-5">
+    <!-- Farmer Journey -->
+    <div class="col-lg-6">
+      <div class="card h-100 border-0 shadow-sm rounded-4 p-4" style="background: #ffffff; border-top: 4px solid #2d6a4f !important;">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center fs-4" style="width: 52px; height: 52px;">
+            <i class="bi bi-flower1"></i>
+          </div>
+          <div>
+            <h4 class="fw-bold mb-0 text-dark">The Farmer Journey</h4>
+            <span class="text-muted small">From Field Harvest to Direct Realization</span>
+          </div>
+        </div>
+
+        <ol class="list-unstyled d-flex flex-column gap-3 mb-0">
+          <li class="d-flex gap-3">
+            <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">1</span>
+            <div>
+              <strong>Register &amp; Profile Farm:</strong>
+              <div class="small text-muted">Create a verified producer profile specifying your village, district, soil type, and crop portfolio.</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">2</span>
+            <div>
+              <strong>List Harvest with AI Price Assistant:</strong>
+              <div class="small text-muted">Input your lot volume and harvest date. The <em>Fair Price Assistant</em> estimates transparent market baselines. You retain 100% control over final rates.</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">3</span>
+            <div>
+              <strong>Receive &amp; Accept Direct Orders:</strong>
+              <div class="small text-muted">Review buyer specifications, delivery destinations, and quantities. Accept orders directly with 1 click.</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">4</span>
+            <div>
+              <strong>Prevent Waste with Surplus Rescue:</strong>
+              <div class="small text-muted">If lots near harvest shelf-life limits, activate farmer-controlled surplus discounts to clear stock rapidly.</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Buyer Journey -->
+    <div class="col-lg-6">
+      <div class="card h-100 border-0 shadow-sm rounded-4 p-4" style="background: #ffffff; border-top: 4px solid #0284c7 !important;">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fs-4" style="width: 52px; height: 52px;">
+            <i class="bi bi-shop"></i>
+          </div>
+          <div>
+            <h4 class="fw-bold mb-0 text-dark">The Buyer Journey</h4>
+            <span class="text-muted small">Restaurants, Retailers, Wholesalers &amp; Consumers</span>
+          </div>
+        </div>
+
+        <ol class="list-unstyled d-flex flex-column gap-3 mb-0">
+          <li class="d-flex gap-3">
+            <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">1</span>
+            <div>
+              <strong>Search by District, Volume &amp; Freshness:</strong>
+              <div class="small text-muted">Filter by crop variety, distance, harvest timeline, and bulk quantities suitable for commercial scale.</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">2</span>
+            <div>
+              <strong>Smart Matching Engine:</strong>
+              <div class="small text-muted">Receive AI-ranked listings tailored to your persona (e.g. daily kitchen prep for restaurants, bulk tonnage for wholesalers).</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">3</span>
+            <div>
+              <strong>Atomic Order Reservation:</strong>
+              <div class="small text-muted">Place an order with real-time stock deduction. No double-selling or phantom inventory.</div>
+            </div>
+          </li>
+          <li class="d-flex gap-3">
+            <span class="badge bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">4</span>
+            <div>
+              <strong>Direct Settlement &amp; Dispatch:</strong>
+              <div class="small text-muted">Directly coordinate farm pickup or delivery with Cash on Delivery / Direct Settlement. Zero intermediary commissions.</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Middleman Problem Breakdown Section -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5" style="background: #fafaf9;">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <span class="text-danger fw-bold small text-uppercase">The Problem We Solve</span>
+        <h3 class="fw-bold text-dark mt-1">Why Agriculture Needs Direct Digital Linkages</h3>
+        <p class="text-muted small">
+          In typical agricultural marketing across India, produce passes through 4 to 6 intermediaries: local village aggregators, Commission Agents (arhtiyas), APMC mandi wholesalers, sub-wholesalers, and neighborhood distributors.
+        </p>
+        <p class="text-muted small">
+          Each tier adds transport delays, holding wastage, and 10-15% profit margins. By the time produce reaches a restaurant or retail shelf, the consumer pays 300% more, while the farmer who grew it earned barely 30% of the value.
+        </p>
+        <div class="p-3 bg-white border rounded-3 small">
+          <strong class="text-success"><i class="bi bi-check-circle-fill me-1"></i>FarmDirect AI Solution:</strong>
+          Direct transparent connection, AI price guidance, verified direct contact, and atomic inventory management.
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card bg-white border-0 shadow p-4 rounded-4 text-center">
+          <h5 class="fw-bold text-dark mb-4">Value Distribution Comparison</h5>
+          <div class="mb-4">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Traditional Middleman Model:</span>
+              <span class="text-danger fw-bold">Farmer gets ~32%</span>
+            </div>
+            <div class="progress" style="height: 20px;">
+              <div class="progress-bar bg-success" style="width: 32%;">Farmer 32%</div>
+              <div class="progress-bar bg-danger" style="width: 68%;">Middlemen &amp; Waste 68%</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>FarmDirect AI Direct Model:</span>
+              <span class="text-success fw-bold">Farmer gets ~82%</span>
+            </div>
+            <div class="progress" style="height: 20px;">
+              <div class="progress-bar bg-success" style="width: 82%;">Farmer 82%</div>
+              <div class="progress-bar bg-info" style="width: 18%;">Transport &amp; Packaging 18%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <a href="{{ url_for('register') }}" class="btn btn-farm-primary btn-lg shadow-sm">
+      <i class="bi bi-person-plus me-1"></i>Get Started on FarmDirect AI
+    </a>
+  </div>
+</div>
+{% endblock %}

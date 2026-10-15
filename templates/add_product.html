@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}List New Agricultural Produce — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+          <li class="breadcrumb-item"><a href="{{ url_for('farmer_dashboard') }}" class="text-success">Farmer Dashboard</a></li>
+          <li class="breadcrumb-item active">List New Produce</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-farm-primary text-white py-3 px-4" style="background-color: var(--primary-deep);">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-tag-fill fs-5 text-warning"></i>
+            <div>
+              <h4 class="fw-bold mb-0 text-white">Add New Agricultural Listing</h4>
+              <span class="small text-light">Publish fresh crops directly to restaurants, wholesalers, and retail buyers</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <form action="{{ url_for('add_product') }}" method="POST" enctype="multipart/form-data" id="addProductForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Basic Info Row -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-7">
+                <label for="productNameInput" class="form-label fw-semibold">
+                  Produce Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control form-control-lg" id="productNameInput" name="name" required placeholder="e.g. Hybrid Red Tomatoes, 1121 Basmati Rice..." value="{{ form_data.get('name', '') }}">
+                <div class="form-text small text-muted">Include variety or grade if applicable.</div>
+              </div>
+
+              <div class="col-md-5">
+                <label for="productCategorySelect" class="form-label fw-semibold">
+                  Agricultural Category <span class="text-danger">*</span>
+                </label>
+                <select class="form-select form-select-lg" id="productCategorySelect" name="category" required>
+                  <option value="Vegetables" {% if form_data.get('category') == 'Vegetables' %}selected{% endif %}>Vegetables</option>
+                  <option value="Fruits" {% if form_data.get('category') == 'Fruits' %}selected{% endif %}>Fruits</option>
+                  <option value="Grains" {% if form_data.get('category') == 'Grains' %}selected{% endif %}>Grains</option>
+                  <option value="Pulses" {% if form_data.get('category') == 'Pulses' %}selected{% endif %}>Pulses</option>
+                  <option value="Spices" {% if form_data.get('category') == 'Spices' %}selected{% endif %}>Spices</option>
+                  <option value="Dairy & Honey" {% if form_data.get('category') == 'Dairy & Honey' %}selected{% endif %}>Dairy &amp; Honey</option>
+                  <option value="Other" {% if form_data.get('category') == 'Other' %}selected{% endif %}>Other Produce</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="productDescriptionInput" class="form-label fw-semibold">Detailed Description</label>
+              <textarea class="form-control" id="productDescriptionInput" name="description" rows="3" placeholder="Describe quality grade, moisture level, organic/natural certification, grading status, and packing details...">{{ form_data.get('description', '') }}</textarea>
+            </div>
+
+            <!-- Quantity & Unit & Pricing Row -->
+            <div class="row g-3 mb-3 p-3 bg-light rounded-3 border">
+              <div class="col-md-4">
+                <label for="productQuantityInput" class="form-label fw-semibold">
+                  Available Quantity <span class="text-danger">*</span>
+                </label>
+                <input type="number" step="any" min="0.1" class="form-control" id="productQuantityInput" name="quantity" required placeholder="e.g. 500" value="{{ form_data.get('quantity', '') }}">
+              </div>
+
+              <div class="col-md-4">
+                <label for="productUnitSelect" class="form-label fw-semibold">
+                  Measurement Unit <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" id="productUnitSelect" name="unit" required>
+                  <option value="kg" {% if form_data.get('unit') == 'kg' %}selected{% endif %}>Kilogram (kg)</option>
+                  <option value="quintal" {% if form_data.get('unit') == 'quintal' %}selected{% endif %}>Quintal (100 kg)</option>
+                  <option value="tonne" {% if form_data.get('unit') == 'tonne' %}selected{% endif %}>Metric Tonne (1,000 kg)</option>
+                  <option value="litre" {% if form_data.get('unit') == 'litre' %}selected{% endif %}>Litre (Dairy/Oil)</option>
+                  <option value="dozen" {% if form_data.get('unit') == 'dozen' %}selected{% endif %}>Dozen (Fruits/Bananas)</option>
+                  <option value="piece" {% if form_data.get('unit') == 'piece' %}selected{% endif %}>Piece (Melons/Coconuts)</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label for="productPriceInput" class="form-label fw-semibold">
+                  Price per Unit (₹ INR) <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white fw-bold">₹</span>
+                  <input type="number" step="any" min="0.1" class="form-control" id="productPriceInput" name="price" required placeholder="e.g. 28.00" value="{{ form_data.get('price', '') }}">
+                </div>
+              </div>
+
+              <!-- AI Price Assistant Trigger -->
+              <div class="col-12 mt-2">
+                <button type="button" class="btn btn-outline-success btn-sm" id="btnFetchAiPrice">
+                  <i class="bi bi-robot me-1"></i>Get AI Fair Price Recommendation
+                  <span class="spinner-border spinner-border-sm ms-2 d-none" id="aiPriceSpinner" role="status"></span>
+                </button>
+                <div id="aiPriceResultContainer" class="d-none"></div>
+              </div>
+            </div>
+
+            <!-- Location Fields -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label for="productLocationInput" class="form-label fw-semibold">
+                  Farm Location / Address <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="productLocationInput" name="location" required placeholder="e.g. Dindori Farm Gate, Nashik" value="{{ form_data.get('location', '') }}">
+              </div>
+
+              <div class="col-md-4">
+                <label for="productVillageInput" class="form-label fw-semibold">Village / Taluka</label>
+                <input type="text" class="form-control" id="productVillageInput" name="village" placeholder="e.g. Dindori" value="{{ form_data.get('village', '') }}">
+              </div>
+
+              <div class="col-md-4">
+                <label for="productDistrictInput" class="form-label fw-semibold">District <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="productDistrictInput" name="district" required placeholder="e.g. Nashik" value="{{ form_data.get('district', '') }}">
+              </div>
+            </div>
+
+            <!-- Harvest & Freshness Dates -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="productHarvestDateInput" class="form-label fw-semibold">Harvest Date</label>
+                <input type="date" class="form-control" id="productHarvestDateInput" name="harvest_date" value="{{ form_data.get('harvest_date', '') }}">
+                <div class="form-text small text-muted">Recent harvest dates earn a freshness premium from restaurants.</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="productFreshnessDateInput" class="form-label fw-semibold">Best Before / Freshness Expiry</label>
+                <input type="date" class="form-control" id="productFreshnessDateInput" name="freshness_date" value="{{ form_data.get('freshness_date', '') }}">
+                <div class="form-text small text-muted">Helps buyers assess transit and storage timelines.</div>
+              </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-4">
+              <label for="productImageInput" class="form-label fw-semibold">Produce Photo (Optional)</label>
+              <input type="file" class="form-control" id="productImageInput" name="image" accept="image/png, image/jpeg, image/webp">
+              <div class="form-text small text-muted">Upload an authentic photo of your harvest lot. Max 16 MB.</div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+              <a href="{{ url_for('farmer_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-1"></i>Cancel
+              </a>
+              <button type="submit" class="btn btn-farm-primary px-5 py-2 fw-bold shadow-sm">
+                <i class="bi bi-cloud-arrow-up me-1"></i>Publish Produce Listing
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

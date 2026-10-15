@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ product.name }} — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+          <li class="breadcrumb-item"><a href="{{ url_for('farmer_dashboard') }}" class="text-success">Farmer Dashboard</a></li>
+          <li class="breadcrumb-item active">Edit {{ product.name }}</li>
+        </ol>
+      </nav>
+
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-farm-primary text-white py-3 px-4" style="background-color: var(--primary-deep);">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold mb-0 text-white">Edit Produce Listing</h4>
+            <span class="badge bg-light text-dark">ID #{{ product.id }}</span>
+          </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <form action="{{ url_for('edit_product', product_id=product.id) }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Name and Category -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-7">
+                <label class="form-label fw-semibold">Produce Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="name" required value="{{ product.name }}">
+              </div>
+
+              <div class="col-md-5">
+                <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                <select class="form-select" name="category" required>
+                  {% for cat in ["Vegetables", "Fruits", "Grains", "Pulses", "Spices", "Dairy & Honey", "Other"] %}
+                    <option value="{{ cat }}" {% if product.category == cat %}selected{% endif %}>{{ cat }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Description</label>
+              <textarea class="form-control" name="description" rows="3">{{ product.description or '' }}</textarea>
+            </div>
+
+            <!-- Stock & Price -->
+            <div class="row g-3 mb-3 p-3 bg-light rounded-3 border">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Available Stock <span class="text-danger">*</span></label>
+                <input type="number" step="any" min="0" class="form-control" name="quantity" required value="{{ product.quantity }}">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Unit <span class="text-danger">*</span></label>
+                <select class="form-select" name="unit" required>
+                  {% for u in ["kg", "quintal", "tonne", "litre", "dozen", "piece"] %}
+                    <option value="{{ u }}" {% if product.unit == u %}selected{% endif %}>{{ u }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Base Price (₹ INR) <span class="text-danger">*</span></label>
+                <input type="number" step="any" min="0.1" class="form-control" name="price" required value="{{ product.price }}">
+              </div>
+            </div>
+
+            <!-- Surplus Clearance Controls -->
+            <div class="p-3 mb-3 rounded-3" style="background-color: #fef2f2; border: 1px dashed #f87171;">
+              <h6 class="fw-bold text-danger mb-2"><i class="bi bi-tag-fill me-1"></i>Surplus Rescue Clearance Settings</h6>
+              <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="is_surplus" value="1" id="surplusCheck" {% if product.is_surplus %}checked{% endif %}>
+                    <label class="form-check-label fw-semibold text-dark" for="surplusCheck">
+                      Mark as Surplus Clearance Lot
+                    </label>
+                  </div>
+                  <div class="small text-muted">Feature in Surplus Deals to accelerate sales before freshness declines.</div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-muted">Discount Percentage (%)</label>
+                  <div class="input-group">
+                    <input type="number" step="1" min="0" max="80" class="form-control" name="discount_percentage" value="{{ product.discount_percentage|int }}">
+                    <span class="input-group-text">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location Fields -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Farm Location <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="location" required value="{{ product.location }}">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Village / Taluka</label>
+                <input type="text" class="form-control" name="village" value="{{ product.village or '' }}">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">District <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" name="district" required value="{{ product.district or '' }}">
+              </div>
+            </div>
+
+            <!-- Dates -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Harvest Date</label>
+                <input type="date" class="form-control" name="harvest_date" value="{{ product.harvest_date.strftime('%Y-%m-%d') if product.harvest_date else '' }}">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Best Before / Freshness Date</label>
+                <input type="date" class="form-control" name="freshness_date" value="{{ product.freshness_date.strftime('%Y-%m-%d') if product.freshness_date else '' }}">
+              </div>
+            </div>
+
+            <!-- Status & Image -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Listing Visibility</label>
+                <select class="form-select" name="is_available">
+                  <option value="1" {% if product.is_available %}selected{% endif %}>Active / Visible on Marketplace</option>
+                  <option value="0" {% if not product.is_available %}selected{% endif %}>Hidden / Unavailable</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Update Produce Photo</label>
+                <input type="file" class="form-control" name="image" accept="image/png, image/jpeg, image/webp">
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+              <a href="{{ url_for('farmer_dashboard') }}" class="btn btn-outline-secondary">
+                Cancel
+              </a>
+              <button type="submit" class="btn btn-farm-primary px-5 py-2 fw-bold shadow-sm">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

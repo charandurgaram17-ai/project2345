@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Frequently Asked Questions — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="text-center mb-5">
+        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-bold mb-2">Help Center</span>
+        <h1 class="h2 fw-bold text-dark">Frequently Asked Questions</h1>
+        <p class="text-muted">Answers to common questions about direct farmer-buyer trade and AI pricing.</p>
+      </div>
+
+      <div class="accordion shadow-sm rounded-4 overflow-hidden" id="faqAccordion">
+        <!-- FAQ 1 -->
+        <div class="accordion-item border-0 border-bottom">
+          <h2 class="accordion-header" id="faq1Heading">
+            <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">
+              How does FarmDirect AI eliminate middleman costs?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse show" aria-labelledby="faq1Heading" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted small">
+              By connecting restaurants, retailers, and wholesalers directly with verified farmers, produce moves straight from the farm gate to the buyer. We do not extract broker fees, allowing farmers to earn up to 35% more while buyers save 20-25% on purchase expenses.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div class="accordion-item border-0 border-bottom">
+          <h2 class="accordion-header" id="faq2Heading">
+            <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+              How does the Fair Price Assistant calculate recommendations?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2Heading" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted small">
+              Our price service uses transparent heuristics combining reference mandi baselines, harvest freshness age (recent harvests earn a quality premium), volume scales (bulk wholesale batches receive volume efficiency scaling), and regional demand. It is strictly advisory: farmers always retain full freedom to set their desired listing prices.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div class="accordion-item border-0 border-bottom">
+          <h2 class="accordion-header" id="faq3Heading">
+            <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+              How are payments handled on the platform?
+            </button>
+          </h2>
+          <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3Heading" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted small">
+              In this MVP demonstration, orders are placed with <strong>Cash on Delivery (COD) / Direct Settlement</strong> upon produce inspection. We do not store card details or charge online processing cuts. Buyers settle directly with farmers.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div class="accordion-item border-0 border-bottom">
+          <h2 class="accordion-header" id="faq4Heading">
+            <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+              What is the Surplus Rescue feature?
+            </button>
+          </h2>
+          <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faq4Heading" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted small">
+              Surplus Rescue alerts farmers when perishable produce (like tomatoes, greens, or ripe bananas) is approaching optimal shelf life with unsold quantity. Farmers can apply an advisory 15-30% discount to feature the lot on the "Surplus Deals" section, allowing food businesses to procure at deep discounts while preventing agricultural waste.
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ 5 -->
+        <div class="accordion-item border-0">
+          <h2 class="accordion-header" id="faq5Heading">
+            <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">
+              Can I cancel an order if my kitchen requirements change?
+            </button>
+          </h2>
+          <div id="faq5" class="accordion-collapse collapse" aria-labelledby="faq5Heading" data-bs-parent="#faqAccordion">
+            <div class="accordion-body text-muted small">
+              Yes, buyers can cancel orders while they are in "Pending" or "Accepted" status. Upon valid cancellation, inventory is atomically restored to the farmer's listing, and the farmer is notified immediately.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

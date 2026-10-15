@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Operations Portal — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="h2 fw-bold text-dark mb-0">Platform Administration &amp; Moderation</h1>
+        <span class="badge bg-warning text-dark fw-bold">Admin Clearance</span>
+      </div>
+      <p class="text-muted mb-0">
+        Monitor system users, moderate produce listings, resolve reported issues, and audit marketplace GMV.
+      </p>
+    </div>
+
+    <div>
+      <a href="{{ url_for('marketplace') }}" class="btn btn-outline-dark btn-sm">
+        <i class="bi bi-box-arrow-up-right me-1"></i>View Live Marketplace
+      </a>
+    </div>
+  </div>
+
+  <!-- Platform KPI Grid -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="stat-box">
+        <div class="stat-number">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+        <div class="text-muted small">{{ total_farmers }} Farmers &bull; {{ total_buyers }} Buyers</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-box stat-gold">
+        <div class="stat-number">₹{{ "{:,.2f}".format(total_gmv) }}</div>
+        <div class="stat-label">Platform GMV</div>
+        <div class="text-muted small">Total Traded Value</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-box">
+        <div class="stat-number">{{ total_products }}</div>
+        <div class="stat-label">Total Listings</div>
+        <div class="text-muted small">{{ active_products }} currently active</div>
+      </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+      <div class="stat-box stat-terra">
+        <div class="stat-number">{{ total_orders }}</div>
+        <div class="stat-label">Total Orders</div>
+        <div class="text-muted small">{{ reports_list|length }} Reports Logged</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reported Listings Queue (If any) -->
+  {% if reports_list %}
+  <div class="card border-0 shadow-sm rounded-4 mb-4 border-danger border-opacity-50">
+    <div class="card-header bg-danger text-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-flag-fill text-white fs-5"></i>
+        <h5 class="fw-bold mb-0 text-white">Reported Produce Listings Review Queue</h5>
+      </div>
+      <span class="badge bg-white text-danger">{{ reports_list|length }} Reports</span>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Report #</th>
+              <th>Reported Product</th>
+              <th>Farmer</th>
+              <th>Reporter</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rep in reports_list %}
+            <tr>
+              <td class="fw-bold">#{{ rep.id }}</td>
+              <td>
+                {% if rep.product %}
+                  <a href="{{ url_for('product_detail', product_id=rep.product.id) }}" class="text-dark fw-bold">
+                    {{ rep.product.name }}
+                  </a>
+                  <div class="small text-muted">{{ rep.product.category }} (₹{{ rep.product.price }}/{{ rep.product.unit }})</div>
+                {% else %}
+                  <span class="text-muted">Listing Removed</span>
+                {% endif %}
+              </td>
+              <td>{{ rep.product.farmer.name if rep.product else 'N/A' }}</td>
+              <td>{{ rep.reporter.name }} ({{ rep.reporter.role.title() }})</td>
+              <td class="small text-danger" style="max-width: 250px;">{{ rep.reason }}</td>
+              <td>
+                <span class="badge {% if rep.status == 'Resolved' %}bg-success{% elif rep.status == 'Dismissed' %}bg-secondary{% else %}bg-warning text-dark{% endif %}">
+                  {{ rep.status }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-1">
+                  {% if rep.status == 'Pending' %}
+                    <form action="{{ url_for('admin_handle_report', report_id=rep.id, action='disable-product') }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-sm btn-danger" title="Disable listing & resolve">
+                        <i class="bi bi-slash-circle me-1"></i>Disable
+                      </button>
+                    </form>
+                    <form action="{{ url_for('admin_handle_report', report_id=rep.id, action='dismiss') }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="Dismiss report">
+                        Dismiss
+                      </button>
+                    </form>
+                  {% else %}
+                    <span class="text-muted small">Processed</span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Listings Moderation Table -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-card-checklist text-success fs-5"></i>
+        <h5 class="fw-bold mb-0 text-dark">Produce Listings Moderation</h5>
+      </div>
+      <span class="text-muted small">Showing latest {{ products_list|length }}</span>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Produce Name</th>
+              <th>Farmer</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Moderation Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for prod in products_list %}
+            <tr>
+              <td class="fw-bold">#{{ prod.id }}</td>
+              <td>
+                <a href="{{ url_for('product_detail', product_id=prod.id) }}" class="fw-bold text-dark text-decoration-none">
+                  {{ prod.name }}
+                </a>
+                <div class="small text-muted">{{ prod.location }}</div>
+              </td>
+              <td>{{ prod.farmer.name }}</td>
+              <td><span class="badge-category">{{ prod.category }}</span></td>
+              <td>{{ prod.quantity }} {{ prod.unit }}</td>
+              <td>₹{{ prod.effective_price }} / {{ prod.unit }}</td>
+              <td>
+                {% if prod.is_available %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-secondary">Disabled / Suspended</span>
+                {% endif %}
+              </td>
+              <td>
+                <form action="{{ url_for('admin_toggle_product', product_id=prod.id) }}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm {% if prod.is_available %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                    {% if prod.is_available %}
+                      <i class="bi bi-slash-circle me-1"></i>Suspend Listing
+                    {% else %}
+                      <i class="bi bi-check-circle me-1"></i>Reactivate
+                    {% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Accounts Directory (No Passwords Exposed) -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-people text-primary fs-5"></i>
+        <h5 class="fw-bold mb-0 text-dark">Platform Users Directory</h5>
+      </div>
+      <span class="text-muted small">Passwords securely hashed with bcrypt / werkzeug</span>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>User ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Business / Farm Category</th>
+              <th>Location</th>
+              <th>Account Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users_list %}
+            <tr>
+              <td class="fw-bold">#{{ u.id }}</td>
+              <td><strong>{{ u.name }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>
+                <span class="badge {% if u.role == 'farmer' %}bg-success{% elif u.role == 'admin' %}bg-dark{% else %}bg-primary{% endif %}">
+                  {{ u.role.title() }}
+                </span>
+              </td>
+              <td class="small text-muted">{{ u.business_type or 'General' }}</td>
+              <td class="small">{{ u.district or 'N/A' }}</td>
+              <td>
+                {% if u.is_active %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-danger">Suspended</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if u.id != current_user.id %}
+                  <form action="{{ url_for('admin_toggle_user', user_id=u.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm {% if u.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                      {{ 'Suspend' if u.is_active else 'Activate' }}
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="text-muted small">Current User</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

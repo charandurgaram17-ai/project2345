@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Account Profile — FarmDirect AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-farm-primary text-white py-3 px-4" style="background-color: var(--primary-deep);">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold mb-0 text-white">Profile &amp; Account Settings</h4>
+            <span class="badge bg-light text-dark">{{ user.role.title() }}</span>
+          </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <form action="{{ url_for('profile') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Full Name / Entity Name</label>
+                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Email Address (Login Identity)</label>
+                <input type="email" class="form-control" value="{{ user.email }}" disabled>
+                <div class="form-text small text-muted">Email cannot be changed directly for security.</div>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Phone / WhatsApp Number</label>
+                <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Business / User Classification</label>
+                <input type="text" name="business_type" class="form-control" value="{{ user.business_type or '' }}">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Village / Locality</label>
+                <input type="text" name="village" class="form-control" value="{{ user.village or '' }}">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">District</label>
+                <input type="text" name="district" class="form-control" value="{{ user.district or '' }}" required>
+              </div>
+            </div>
+
+            {% if user.is_farmer() %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Farm Details &amp; Acreage</label>
+              <textarea name="farm_details" class="form-control" rows="3">{{ user.farm_details or '' }}</textarea>
+            </div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <h6 class="fw-bold text-dark mb-2">Change Password (Optional)</h6>
+            <div class="mb-4">
+              <label class="form-label small text-muted">Leave blank if you do not want to change your password</label>
+              <input type="password" name="new_password" class="form-control" minlength="6" placeholder="Enter new password (minimum 6 chars)">
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-farm-primary px-4 fw-bold">
+                <i class="bi bi-check-circle me-1"></i>Save Profile Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
